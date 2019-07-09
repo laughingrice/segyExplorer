@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DicomExplorer</class>
- <widget class="QMainWindow" name="DicomExplorer">
+ <class>segyExplorer</class>
+ <widget class="QMainWindow" name="segyExplorer">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1218</width>
+    <width>1231</width>
     <height>838</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>DICOM Explorer</string>
+   <string>segy Explorer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -123,7 +123,7 @@
        <attribute name="title">
         <string>Data</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="matplotlibFig" name="mplWindow" native="true">
           <property name="sizePolicy">
@@ -131,6 +131,40 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Color Range</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRangeSlider" name="colorRange" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>10</width>
+            <height>10</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Data Range</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRangeSlider" name="dataRange" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>10</width>
+            <height>10</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -145,7 +179,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1218</width>
+     <width>1231</width>
      <height>22</height>
     </rect>
    </property>
@@ -158,6 +192,19 @@
    <extends>QWidget</extends>
    <header>matplotlibfig.h</header>
    <container>1</container>
+   <slots>
+    <slot>onColorRangeChange()</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>QRangeSlider</class>
+   <extends>QWidget</extends>
+   <header>qrangeslider.h</header>
+   <container>1</container>
+   <slots>
+    <signal>startValueChanged(int)</signal>
+    <signal>endValueChanged(int)</signal>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -165,12 +212,12 @@
   <connection>
    <sender>quitButton</sender>
    <signal>clicked()</signal>
-   <receiver>DicomExplorer</receiver>
+   <receiver>segyExplorer</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1030</x>
-     <y>729</y>
+     <x>1128</x>
+     <y>803</y>
     </hint>
     <hint type="destinationlabel">
      <x>559</x>
@@ -181,12 +228,12 @@
   <connection>
    <sender>openButton</sender>
    <signal>clicked()</signal>
-   <receiver>DicomExplorer</receiver>
+   <receiver>segyExplorer</receiver>
    <slot>onOpen()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1030</x>
-     <y>62</y>
+     <x>1128</x>
+     <y>84</y>
     </hint>
     <hint type="destinationlabel">
      <x>559</x>
@@ -194,8 +241,41 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>colorRange</sender>
+   <signal>startValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>941</x>
+     <y>757</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1084</x>
+     <y>709</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colorRange</sender>
+   <signal>endValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>941</x>
+     <y>756</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1084</x>
+     <y>624</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onOpen()</slot>
+  <slot>onColorRangeChange()</slot>
  </slots>
 </ui>
