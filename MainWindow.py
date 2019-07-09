@@ -3,7 +3,6 @@ from PyQt5 import uic
 import os
 
 import numpy as np
-import matplotlib.pyplot as plt
 import segyio
 
 
