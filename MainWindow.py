@@ -25,26 +25,45 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 			self.OpenSegy(fileName)
 
 
-	def OpenSegy(self, file):
-
-		with segyio.open(file, strict=False) as s:
-			self.headerTree.clear()
-			self.headerTree.setHeaderLabels(['tag', 'value'])
-
-			for k in s.bin.keys():
-				self.headerTree.addTopLevelItem(QtWidgets.QTreeWidgetItem([str(k), str(s.bin[k])]))
-
-			self.traceTree.clear()
-			self.traceTree.setHeaderLabels([str(k) for k in s.header[0].keys()])
-
-			for h in s.header:
-				self.traceTree.addTopLevelItem(QtWidgets.QTreeWidgetItem([str(v) for v in h.values()]))
-
-			data = np.zeros((s.tracecount, s.bin[segyio.BinField.Samples]), s.dtype)
-
-			for i in range(s.tracecount):
-				data[i, :] = s.trace[i]
-
-			self.mplWindow.ax.imshow(data.T, aspect='auto', cmap='gray')
-			self.mplWindow.fig.tight_layout()
+	def onColorRangeChange(self):
+		if 'img' in self.__dict__:
+			self.img.set_clim(self.colorRange.start(), self.colorRange.end())
 			self.mplWindow.canvas.draw()
+
+
+	def OpenSegy(self, file: str):
+		try:
+			with segyio.open(file, strict=False) as s:
+				self.headerTree.clear()
+				self.headerTree.setHeaderLabels(['tag', 'value'])
+
+				for k in s.bin.keys():
+					self.headerTree.addTopLevelItem(QtWidgets.QTreeWidgetItem([str(k), str(s.bin[k])]))
+
+				self.traceTree.clear()
+				self.traceTree.setHeaderLabels([str(k) for k in s.header[0].keys()])
+
+				for h in s.header:
+					self.traceTree.addTopLevelItem(QtWidgets.QTreeWidgetItem([str(v) for v in h.values()]))
+
+				data = np.zeros((s.tracecount, s.bin[segyio.BinField.Samples]), s.dtype)
+
+				for i in range(s.tracecount):
+					data[i, :] = s.trace[i]
+
+				# Set color range before displaying image as a workaround for now as this changes the color scale
+				# and the slider bar does not support fractional values so nothing is shown if the range is bellow 1
+				self.colorRange.setMin(int(np.floor(np.min(data))))
+				self.colorRange.setStart(self.colorRange.min())
+				self.colorRange.setMax(int(np.ceil(np.max(data))))
+				self.colorRange.setEnd(self.colorRange.max())
+				self.colorRange.drawValues()
+				self.colorRange.update()
+
+				self.img = self.mplWindow.ax.imshow(data.T, aspect='auto', cmap='gray')
+				self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
+				self.mplWindow.canvas.draw()
+
+
+		except OSError as e:
+			print('Failed to open file {} - {}'.format(file, e.args[0]))
