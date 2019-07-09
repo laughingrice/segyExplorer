@@ -15,7 +15,7 @@ class matplotlibFig(QtWidgets.QWidget):
 		self.toolbar = NavigationToolbar(self.canvas, self)
 
 		# Add axes
-		self.ax = self.canvas.figure.subplots()
+		self.ax, self.cax = self.canvas.figure.subplots(1,2, gridspec_kw={'width_ratios': [20, 1], 'wspace': 0.03, 'left': 0.04, 'right': 0.95, 'top': 0.99, 'bottom': 0.04})
 
 		# Add a layout to the widget
 		self.vbl = QtWidgets.QVBoxLayout()
