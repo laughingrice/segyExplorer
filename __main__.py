@@ -10,7 +10,7 @@ if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('input', nargs=1, help='file to process')
+	parser.add_argument('input', nargs='?', help='file to process')
 	args = parser.parse_args()
 
 	window = SegyMainWindow()
