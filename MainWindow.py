@@ -30,6 +30,13 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 			self.img.set_clim(self.colorRange.start(), self.colorRange.end())
 			self.mplWindow.canvas.draw()
 
+	def onDataRangeChange(self):
+		if 'data' in self.__dict__:
+			self.img = self.mplWindow.ax.imshow(self.data[self.dataRange.start():self.dataRange.end(), :].T, aspect='auto', cmap='gray')
+			self.img.set_clim(self.colorRange.start(), self.colorRange.end())
+			self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
+			self.mplWindow.canvas.draw()
+
 
 	def OpenSegy(self, file: str):
 		try:
@@ -46,21 +53,26 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 				for h in s.header:
 					self.traceTree.addTopLevelItem(QtWidgets.QTreeWidgetItem([str(v) for v in h.values()]))
 
-				data = np.zeros((s.tracecount, s.bin[segyio.BinField.Samples]), s.dtype)
+				self.data = np.zeros((s.tracecount, s.bin[segyio.BinField.Samples]), s.dtype)
 
 				for i in range(s.tracecount):
-					data[i, :] = s.trace[i]
+					self.data[i, :] = s.trace[i]
 
 				# Set color range before displaying image as a workaround for now as this changes the color scale
 				# and the slider bar does not support fractional values so nothing is shown if the range is bellow 1
-				self.colorRange.setMin(int(np.floor(np.min(data))))
+				self.colorRange.setMin(int(np.floor(np.min(self.data))))
 				self.colorRange.setStart(self.colorRange.min())
-				self.colorRange.setMax(int(np.ceil(np.max(data))))
+				self.colorRange.setMax(int(np.ceil(np.max(self.data))))
 				self.colorRange.setEnd(self.colorRange.max())
-				self.colorRange.drawValues()
 				self.colorRange.update()
 
-				self.img = self.mplWindow.ax.imshow(data.T, aspect='auto', cmap='gray')
+				self.dataRange.setMin(0)
+				self.dataRange.setStart(self.dataRange.min())
+				self.dataRange.setMax(self.data.shape[0])
+				self.dataRange.setEnd(self.dataRange.max())
+				self.dataRange.update()
+
+				self.img = self.mplWindow.ax.imshow(self.data.T, aspect='auto', cmap='gray')
 				self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
 				self.mplWindow.canvas.draw()
 

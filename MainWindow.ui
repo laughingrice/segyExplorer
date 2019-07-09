@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1231</width>
+    <width>1218</width>
     <height>838</height>
    </rect>
   </property>
@@ -179,7 +179,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1231</width>
+     <width>1218</width>
      <height>22</height>
     </rect>
    </property>
@@ -249,7 +249,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>941</x>
-     <y>757</y>
+     <y>733</y>
     </hint>
     <hint type="destinationlabel">
      <x>1084</x>
@@ -265,7 +265,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>941</x>
-     <y>756</y>
+     <y>732</y>
     </hint>
     <hint type="destinationlabel">
      <x>1084</x>
@@ -273,9 +273,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>dataRange</sender>
+   <signal>startValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1046</x>
+     <y>775</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1109</x>
+     <y>743</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataRange</sender>
+   <signal>endValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1017</x>
+     <y>776</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1108</x>
+     <y>798</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onOpen()</slot>
   <slot>onColorRangeChange()</slot>
+  <slot>onDataRangeChange()</slot>
  </slots>
 </ui>
