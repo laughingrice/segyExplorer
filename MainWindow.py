@@ -46,4 +46,5 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 				data[i, :] = s.trace[i]
 
 			self.mplWindow.ax.imshow(data.T, aspect='auto', cmap='gray')
+			self.mplWindow.fig.tight_layout()
 			self.mplWindow.canvas.draw()
