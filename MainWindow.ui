@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1218</width>
-    <height>838</height>
+    <width>1330</width>
+    <height>948</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -123,7 +123,7 @@
        <attribute name="title">
         <string>Data</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,0">
         <item>
          <widget class="matplotlibFig" name="mplWindow" native="true">
           <property name="sizePolicy">
@@ -135,38 +135,107 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Color Range</string>
+         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,0,1,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
           </property>
-         </widget>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Color Range</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="colorRangeTextMin">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRangeSlider" name="colorRange" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>10</width>
+              <height>10</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="colorRangeTextMax">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
-         <widget class="QRangeSlider" name="colorRange" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>10</width>
-            <height>10</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Data Range</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRangeSlider" name="dataRange" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>10</width>
-            <height>10</height>
-           </size>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0,1,0">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Data Range</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="dataRangeTextMin">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRangeSlider" name="dataRange" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>10</width>
+              <height>10</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="dataRangeTextMax">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -179,7 +248,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1218</width>
+     <width>1330</width>
      <height>22</height>
     </rect>
    </property>
@@ -216,8 +285,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1128</x>
-     <y>803</y>
+     <x>1316</x>
+     <y>913</y>
     </hint>
     <hint type="destinationlabel">
      <x>559</x>
@@ -232,7 +301,7 @@
    <slot>onOpen()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1128</x>
+     <x>1316</x>
      <y>84</y>
     </hint>
     <hint type="destinationlabel">
@@ -248,8 +317,8 @@
    <slot>onColorRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>941</x>
-     <y>733</y>
+     <x>1115</x>
+     <y>853</y>
     </hint>
     <hint type="destinationlabel">
      <x>1084</x>
@@ -264,8 +333,8 @@
    <slot>onColorRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>941</x>
-     <y>732</y>
+     <x>1115</x>
+     <y>853</y>
     </hint>
     <hint type="destinationlabel">
      <x>1084</x>
@@ -280,8 +349,8 @@
    <slot>onDataRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1046</x>
-     <y>775</y>
+     <x>1115</x>
+     <y>890</y>
     </hint>
     <hint type="destinationlabel">
      <x>1109</x>
@@ -296,12 +365,76 @@
    <slot>onDataRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1017</x>
-     <y>776</y>
+     <x>1115</x>
+     <y>890</y>
     </hint>
     <hint type="destinationlabel">
      <x>1108</x>
      <y>798</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colorRangeTextMax</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1146</x>
+     <y>840</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1244</x>
+     <y>810</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colorRangeTextMin</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>170</x>
+     <y>843</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1249</x>
+     <y>706</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataRangeTextMax</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1172</x>
+     <y>879</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1245</x>
+     <y>848</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataRangeTextMin</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>879</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1253</x>
+     <y>605</y>
     </hint>
    </hints>
   </connection>
@@ -310,5 +443,7 @@
   <slot>onOpen()</slot>
   <slot>onColorRangeChange()</slot>
   <slot>onDataRangeChange()</slot>
+  <slot>onColorRangeTextChange()</slot>
+  <slot>onDataRangeTextChange()</slot>
  </slots>
 </ui>
