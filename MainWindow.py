@@ -104,13 +104,13 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 				self.fileHeader = pd.DataFrame(columns=['tag','values'], index=range(len(s.bin)), dtype=str)
 				for i, val in enumerate(s.bin.items()):
 					self.fileHeader.iloc[i,:] = [str(v) for v in val]
-				self.fileHeaderTable.setModel(TableModel(self.fileHeader))
+				self.fileHeaderTable.setModel(PandasModel(self.fileHeader))
 
 				traceHeaderData = np.empty((len(s.header), len(s.header[0].keys())), dtype=np.int32)
 				for i, val in enumerate(s.header):
 					traceHeaderData[i, :] = [x for x in val.values()]
 				self.traceHeader = pd.DataFrame(data=traceHeaderData, columns=[str(k) for k in s.header[0].keys()])
-				self.traceHeaderTable.setModel(TableModel(self.traceHeader))
+				self.traceHeaderTable.setModel(PandasModel(self.traceHeader))
 
 				data = np.zeros((s.tracecount, s.bin[segyio.BinField.Samples]), s.dtype)
 				for i in range(s.tracecount):
@@ -149,37 +149,54 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 			print('Failed to open file {} - {}'.format(file, e.args[0]))
 
 
-class TableModel(QtCore.QAbstractTableModel):
+class PandasModel(QtCore.QAbstractTableModel):
 	def __init__(self, data, parent=None):
-		super(TableModel, self).__init__()
+		super(PandasModel, self).__init__()
 		self._data = data
 
 
-	def rowCount(self, parent=QtCore.QModelIndex()):
+	def rowCount(self, parent=None):
 		return self._data.shape[0]
 
 
-	def columnCount(self, parent=QtCore.QModelIndex()):
+	def columnCount(self, parent=None):
 		return self._data.shape[1]
+
 
 	def headerData(self, idx, orientation, role):
 		if role != QtCore.Qt.DisplayRole:
-			return QtCore.QVariant()
+			return None
 
 		if orientation == QtCore.Qt.Horizontal:
-			return QtCore.QVariant(self._data.columns[idx])
-		else:
-			return QtCore.QVariant(self._data.index[idx])
+			return self._data.columns[idx]
+		if orientation == QtCore.Qt.Vertical:
+			return self._data.index[idx]
+
+		return None
 
 
 	def data(self, index, role=QtCore.Qt.DisplayRole):
+		if not index.isValid():
+			return None
+
 		if role == QtCore.Qt.DisplayRole:
-			i = index.row()
-			j = index.column()
-			return '{}'.format(self._data.iat[i, j])
-		else:
-			return QtCore.QVariant()
+			return str(self._data.values[index.row(),index.column()])
+
+		return None
 
 
 	def flags(self, index):
-		return QtCore.Qt.ItemIsEnabled
+		flags = super(self.__class__, self).flags(index)
+		flags |= QtCore.Qt.ItemIsSelectable
+		flags |= QtCore.Qt.ItemIsEnabled
+
+		return flags
+
+
+	def sort(self, Ncol, order):
+		try:
+			self.layoutAboutToBeChanged.emit()
+			self._data = self._data.sort_values(self._data.columns[Ncol], ascending=not order)
+			self.layoutChanged.emit()
+		except Exception as e:
+			print(e)
