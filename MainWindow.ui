@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>segyExplorer</class>
+ <widget class="QMainWindow" name="segyExplorer">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1330</width>
+    <height>948</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>segy Explorer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QPushButton" name="openButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Open</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="quitButton">
+          <property name="text">
+           <string>Quit</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="fileHeaderTab">
+       <attribute name="title">
+        <string>File Headers</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QTableView" name="fileHeaderTable">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="traceHeaderTab">
+       <attribute name="title">
+        <string>Trace Headers</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QTableView" name="traceHeaderTable">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="dataTab">
+       <attribute name="title">
+        <string>Data</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,0">
+        <item>
+         <widget class="matplotlibFig" name="mplWindow" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,0,1,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
+          </property>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Color Range</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="colorRangeTextMin">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRangeSlider" name="colorRange" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>10</width>
+              <height>10</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="colorRangeTextMax">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0,1,0">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Data Range</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="dataRangeTextMin">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRangeSlider" name="dataRange" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>10</width>
+              <height>10</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="dataRangeTextMax">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1330</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>matplotlibFig</class>
+   <extends>QWidget</extends>
+   <header>matplotlibfig.h</header>
+   <container>1</container>
+   <slots>
+    <slot>onColorRangeChange()</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>QRangeSlider</class>
+   <extends>QWidget</extends>
+   <header>qrangeslider.h</header>
+   <container>1</container>
+   <slots>
+    <signal>startValueChanged(int)</signal>
+    <signal>endValueChanged(int)</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>quitButton</sender>
+   <signal>clicked()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1316</x>
+     <y>913</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>559</x>
+     <y>389</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openButton</sender>
+   <signal>clicked()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1316</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>559</x>
+     <y>389</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colorRange</sender>
+   <signal>startValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1115</x>
+     <y>853</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1084</x>
+     <y>709</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colorRange</sender>
+   <signal>endValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1115</x>
+     <y>853</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1084</x>
+     <y>624</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataRange</sender>
+   <signal>startValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1115</x>
+     <y>890</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1109</x>
+     <y>743</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataRange</sender>
+   <signal>endValueChanged(int)</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1115</x>
+     <y>890</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1108</x>
+     <y>798</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colorRangeTextMax</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1146</x>
+     <y>840</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1244</x>
+     <y>810</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colorRangeTextMin</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onColorRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>170</x>
+     <y>843</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1249</x>
+     <y>706</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataRangeTextMax</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1172</x>
+     <y>879</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1245</x>
+     <y>848</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataRangeTextMin</sender>
+   <signal>editingFinished()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onDataRangeTextChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>879</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1253</x>
+     <y>605</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onOpen()</slot>
+  <slot>onColorRangeChange()</slot>
+  <slot>onDataRangeChange()</slot>
+  <slot>onColorRangeTextChange()</slot>
+  <slot>onDataRangeTextChange()</slot>
+ </slots>
+</ui>
