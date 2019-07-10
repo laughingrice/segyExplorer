@@ -32,7 +32,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		uic.loadUi(ui_file, self)
 
 		self.img = None
-		self.data = None
+		self._data = None
 
 
 	def onOpen(self):
@@ -43,61 +43,94 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 
 
 	def onColorRangeChange(self):
-		if self.img is None:
+		if self._img is None:
 			return
 
-		if self.c == self.colorRange.start() and self.C == self.colorRange.end():
+		linked = self.colorRangeLinked.isChecked()
+		self.colorRangeMin.setEnabled(False if linked else True)
+
+		c = self.colorRangeMin.value()
+		C = self.colorRangeMax.value()
+
+		if linked:
+			c = self.colorRangeMin.minimum() + (self.colorRangeMax.maximum() - C)
+			self.colorRangeMin.setValue(c)
+
+		if self.c == c and self.C == C:
 			return
 
-		self.c = self.colorRange.start()
-		self.C = self.colorRange.end()
+		self.c = c
+		self.C = C
 
-		self.img.set_clim(self.c, self.C)
+		self._img.set_clim(self.c, self.C)
 		self.mplWindow.canvas.draw()
-
-
-	def onColorRangeTextChange(self):
-		try:
-			c = int(self.colorRangeTextMin.text())
-			C = int(self.colorRangeTextMax.text())
-
-			if c <= C:
-				self.colorRange.setRange(c, C)
-		except:
-			pass # We don't care about exceptions here, mostly letting the user adjust variables until the work for them
 
 
 	def onDataRangeChange(self):
-		if self.data is None:
+		if self._data is None:
 			return
 
-		if self.m == self.dataRange.start() and self.M == self.dataRange.end():
+		m = self.dataRangeMin.value()
+		M = self.dataRangeMax.value()
+
+		if m == self.m and M == self.M:
 			return
 
-		self.m = self.dataRange.start()
-		self.M = self.dataRange.end()
+		if m > M:
+			t = m
+			m = M
+			M = t
 
-		self.img = self.mplWindow.ax.imshow(self.data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C)
-		self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
+		self.m = m
+		self.M = M
+
+		self.mplWindow.ax.clear()
+		self.mplWindow.cax.clear()
+
+		self._img = self.mplWindow.ax.imshow(self._data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C, extent=[self.m, self.M, 0, self._data.shape[1]])
+		self.mplWindow.fig.colorbar(self._img, cax=self.mplWindow.cax)
+
 		self.mplWindow.canvas.draw()
 
 
-	def onDataRangeTextChange(self):
-		try:
-			m = int(self.dataRangeTextMin.text())
-			M = int(self.dataRangeTextMax.text())
+	def onDataJumpRight(self):
+		m = self.dataRangeMin.value()
+		M = self.dataRangeMax.value()
 
-			if m <= M:
-				self.dataRange.setRange(m, M)
-		except:
-			pass # We don't care about exceptions here, mostly letting the user adjust variables until the work for them
+		if M == self.dataRangeMax.maximum():
+			return
+
+		step = (M - m + 1) * self.dataJumpStep.value()
+		M = min(M + step, self.dataRangeMax.maximum())
+		m = M - step + 1
+
+		self.dataRangeMin.setValue(m)
+		self.dataRangeMax.setValue(M)
+
+		self.onDataRangeChange()
+
+	def onDataJumpLeft(self):
+		m = self.dataRangeMin.value()
+		M = self.dataRangeMax.value()
+
+		if m == self.dataRangeMax.minimum():
+			return
+
+		step = M - m + 1
+		m = max(m - step, self.dataRangeMin.minimum())
+		M = m + step - 1
+
+		self.dataRangeMin.setValue(m)
+		self.dataRangeMax.setValue(M)
+
+		self.onDataRangeChange()
 
 
 	def OpenSegy(self, file: str):
 		try:
 			with segyio.open(file, strict=False) as s:
-				self.img = None
-				self.data = None
+				self._img = None
+				self._data = None
 
 				s.mmap()
 
@@ -118,34 +151,42 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 
 				# Set color range before displaying image as a workaround for now as this changes the color scale
 				# and the slider bar does not support fractional values so nothing is shown if the range is bellow 1
-				self.c = int(np.floor(np.min(data)))
-				self.C = int(np.ceil(np.max(data)))
-				self.colorRange.setMin(self.c)
-				self.colorRange.setStart(self.c)
-				self.colorRangeTextMin.setText('{}'.format(self.c))
-				self.colorRange.setMax(self.C)
-				self.colorRange.setEnd(self.C)
-				self.colorRangeTextMax.setText('{}'.format(self.C))
-				self.colorRange.update()
+				self.c = np.min(data)
+				self.C = np.max(data)
+
+				self.colorRangeLinked.setChecked(True if self.c < 0 else False)
+				self.colorRangeMin.setEnabled(False if self.colorRangeLinked.isChecked() else True)
+
+				self.colorRangeMin.setMinimum(self.c)
+				self.colorRangeMin.setMaximum(0.5 * (self.c + self.C) if self.colorRangeLinked.isChecked() else self.C)
+				self.colorRangeMin.setSingleStep((self.C - self.c) / 40)
+				self.colorRangeMax.setMinimum(0.5 * (self.c + self.C) if self.colorRangeLinked.isChecked() else self.c)
+				self.colorRangeMax.setMaximum(self.C)
+				self.colorRangeMax.setSingleStep((self.C - self.c) / 40)
+
+				self.colorRangeMin.setValue(self.c)
+				self.colorRangeMax.setValue(self.C)
 
 				self.m = 0
 				self.M = data.shape[0]-1
-				self.dataRange.setMin(self.m)
-				self.dataRange.setStart(self.m)
-				self.dataRangeTextMin.setText('{}'.format(self.m))
-				self.dataRange.setMax(self.M)
-				self.dataRange.setEnd(self.M)
-				self.dataRangeTextMax.setText('{}'.format(self.M))
-				self.dataRange.update()
 
-				self.data = data
-				self.img = self.mplWindow.ax.imshow(self.data.T, aspect='auto', cmap='gray')
+				self.dataRangeMin.setMinimum(0)
+				self.dataRangeMin.setMaximum(self.M)
+				self.dataRangeMin.setValue(self.m)
+				self.dataRangeMax.setMinimum(0)
+				self.dataRangeMax.setMaximum(self.M)
+				self.dataRangeMax.setValue(self.M)
 
-				self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
+				self._data = data
+
+				self.mplWindow.ax.clear()
+				self.mplWindow.cax.clear()
+
+				self._img = self.mplWindow.ax.imshow(self._data.T, aspect='auto', cmap='gray')
+				self.mplWindow.fig.colorbar(self._img, cax=self.mplWindow.cax)
+
 				self.mplWindow.canvas.draw()
-
-
-		except OSError as e:
+		except Exception as e:
 			print('Failed to open file {} - {}'.format(file, e.args[0]))
 
 
