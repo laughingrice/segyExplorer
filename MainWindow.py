@@ -143,9 +143,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 
 				self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
 				self.mplWindow.canvas.draw()
-
-
-		except OSError as e:
+		except Exception as e:
 			print('Failed to open file {} - {}'.format(file, e.args[0]))
 
 
