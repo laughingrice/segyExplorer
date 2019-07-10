@@ -78,6 +78,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		self.M = self.dataRange.end()
 
 		self.img = self.mplWindow.ax.imshow(self.data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C, extent=[self.m, self.M, 0, self.data.shape[1]])
+		self.mplWindow.cax.clear()
 		self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
 		self.mplWindow.canvas.draw()
 
