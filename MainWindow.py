@@ -77,9 +77,12 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		self.m = self.dataRange.start()
 		self.M = self.dataRange.end()
 
-		self.img = self.mplWindow.ax.imshow(self.data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C, extent=[self.m, self.M, 0, self.data.shape[1]])
+		self.mplWindow.ax.clear()
 		self.mplWindow.cax.clear()
+
+		self.img = self.mplWindow.ax.imshow(self.data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C, extent=[self.m, self.M, 0, self.data.shape[1]])
 		self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
+
 		self.mplWindow.canvas.draw()
 
 
@@ -142,9 +145,13 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 				self.dataRangeTextMax.setText(str(self.M))
 
 				self.data = data
-				self.img = self.mplWindow.ax.imshow(self.data.T, aspect='auto', cmap='gray')
 
+				self.mplWindow.ax.clear()
+				self.mplWindow.cax.clear()
+
+				self.img = self.mplWindow.ax.imshow(self.data.T, aspect='auto', cmap='gray')
 				self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
+
 				self.mplWindow.canvas.draw()
 		except Exception as e:
 			print('Failed to open file {} - {}'.format(file, e.args[0]))
