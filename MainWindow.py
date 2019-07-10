@@ -121,23 +121,25 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 				# and the slider bar does not support fractional values so nothing is shown if the range is bellow 1
 				self.c = int(np.floor(np.min(data)))
 				self.C = int(np.ceil(np.max(data)))
+
 				self.colorRange.setMin(self.c)
-				self.colorRange.setStart(self.c)
-				self.colorRangeTextMin.setText('{}'.format(self.c))
 				self.colorRange.setMax(self.C)
-				self.colorRange.setEnd(self.C)
-				self.colorRangeTextMax.setText('{}'.format(self.C))
+				self.colorRange.setRange(self.c, self.C)
 				self.colorRange.update()
+
+				self.colorRangeTextMin.setText(str(self.c))
+				self.colorRangeTextMax.setText(str(self.C))
 
 				self.m = 0
 				self.M = data.shape[0]-1
+
 				self.dataRange.setMin(self.m)
-				self.dataRange.setStart(self.m)
-				self.dataRangeTextMin.setText('{}'.format(self.m))
 				self.dataRange.setMax(self.M)
-				self.dataRange.setEnd(self.M)
-				self.dataRangeTextMax.setText('{}'.format(self.M))
+				self.dataRange.setRange(self.m, self.M)
 				self.dataRange.update()
+
+				self.dataRangeTextMin.setText(str(self.m))
+				self.dataRangeTextMax.setText(str(self.M))
 
 				self.data = data
 				self.img = self.mplWindow.ax.imshow(self.data.T, aspect='auto', cmap='gray')
