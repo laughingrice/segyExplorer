@@ -14,11 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5 import uic
 import os
 
 import numpy as np
+import pandas as pd
 import segyio
 
 
@@ -28,54 +29,60 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 
 		ui_path = os.path.dirname(os.path.abspath(__file__))
 		ui_file = os.path.join(ui_path, "MainWindow.ui")
-
-
 		uic.loadUi(ui_file, self)
+
+		self.img = None
+		self.data = None
 
 
 	def onOpen(self):
-		fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*);;DICOM Files (*.dcm)')
+		fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*);;segy Files (*.segy)')
 
 		if fileName:
 			self.OpenSegy(fileName)
 
 
 	def onColorRangeChange(self):
-		if not 'img' in self.__dict__:
+		if self.img is None:
 			return
 
-		self.img.set_clim(self.colorRange.start(), self.colorRange.end())
+		if self.c == self.colorRange.start() and self.C == self.colorRange.end():
+			return
+
+		self.c = self.colorRange.start()
+		self.C = self.colorRange.end()
+
+		self.img.set_clim(self.c, self.C)
 		self.mplWindow.canvas.draw()
 
 
 	def onColorRangeTextChange(self):
-		if not 'img' in self.__dict__:
-			return
-
 		try:
-			m = int(self.colorRangeTextMin.text())
-			M = int(self.colorRangeTextMax.text())
+			c = int(self.colorRangeTextMin.text())
+			C = int(self.colorRangeTextMax.text())
 
-			if m <= M:
-				self.colorRange.setRange(m, M)
+			if c <= C:
+				self.colorRange.setRange(c, C)
 		except:
 			pass # We don't care about exceptions here, mostly letting the user adjust variables until the work for them
 
 
 	def onDataRangeChange(self):
-		if not 'data' in self.__dict__:
+		if self.data is None:
 			return
 
-		self.img = self.mplWindow.ax.imshow(self.data[self.dataRange.start():self.dataRange.end(), :].T, aspect='auto', cmap='gray')
-		self.img.set_clim(self.colorRange.start(), self.colorRange.end())
+		if self.m == self.dataRange.start() and self.M == self.dataRange.end():
+			return
+
+		self.m = self.dataRange.start()
+		self.M = self.dataRange.end()
+
+		self.img = self.mplWindow.ax.imshow(self.data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C)
 		self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
 		self.mplWindow.canvas.draw()
 
 
 	def onDataRangeTextChange(self):
-		if not 'img' in self.__dict__:
-			return
-
 		try:
 			m = int(self.dataRangeTextMin.text())
 			M = int(self.dataRangeTextMax.text())
@@ -85,48 +92,94 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		except:
 			pass # We don't care about exceptions here, mostly letting the user adjust variables until the work for them
 
+
 	def OpenSegy(self, file: str):
 		try:
 			with segyio.open(file, strict=False) as s:
-				self.headerTree.clear()
-				self.headerTree.setHeaderLabels(['tag', 'value'])
+				self.img = None
+				self.data = None
 
-				for k in s.bin.keys():
-					self.headerTree.addTopLevelItem(QtWidgets.QTreeWidgetItem([str(k), str(s.bin[k])]))
+				s.mmap()
 
-				self.traceTree.clear()
-				self.traceTree.setHeaderLabels([str(k) for k in s.header[0].keys()])
+				self.fileHeader = pd.DataFrame(columns=['tag','values'], index=range(len(s.bin)), dtype=str)
+				for i, val in enumerate(s.bin.items()):
+					self.fileHeader.iloc[i,:] = [str(v) for v in val]
+				self.fileHeaderTable.setModel(TableModel(self.fileHeader))
 
-				for h in s.header:
-					self.traceTree.addTopLevelItem(QtWidgets.QTreeWidgetItem([str(v) for v in h.values()]))
+				traceHeaderData = np.empty((len(s.header), len(s.header[0].keys())), dtype=np.int32)
+				for i, val in enumerate(s.header):
+					traceHeaderData[i, :] = [x for x in val.values()]
+				self.traceHeader = pd.DataFrame(data=traceHeaderData, columns=[str(k) for k in s.header[0].keys()])
+				self.traceHeaderTable.setModel(TableModel(self.traceHeader))
 
-				self.data = np.zeros((s.tracecount, s.bin[segyio.BinField.Samples]), s.dtype)
-
+				data = np.zeros((s.tracecount, s.bin[segyio.BinField.Samples]), s.dtype)
 				for i in range(s.tracecount):
-					self.data[i, :] = s.trace[i]
+					data[i, :] = s.trace[i]
 
 				# Set color range before displaying image as a workaround for now as this changes the color scale
 				# and the slider bar does not support fractional values so nothing is shown if the range is bellow 1
-				self.colorRange.setMin(int(np.floor(np.min(self.data))))
-				self.colorRange.setStart(self.colorRange.min())
-				self.colorRangeTextMin.setText('{}'.format(self.colorRange.min()))
-				self.colorRange.setMax(int(np.ceil(np.max(self.data))))
-				self.colorRange.setEnd(self.colorRange.max())
-				self.colorRangeTextMax.setText('{}'.format(self.colorRange.max()))
+				self.c = int(np.floor(np.min(data)))
+				self.C = int(np.ceil(np.max(data)))
+				self.colorRange.setMin(self.c)
+				self.colorRange.setStart(self.c)
+				self.colorRangeTextMin.setText('{}'.format(self.c))
+				self.colorRange.setMax(self.C)
+				self.colorRange.setEnd(self.C)
+				self.colorRangeTextMax.setText('{}'.format(self.C))
 				self.colorRange.update()
 
-				self.dataRange.setMin(0)
-				self.dataRange.setStart(self.dataRange.min())
-				self.dataRangeTextMin.setText('{}'.format(self.dataRange.min()))
-				self.dataRange.setMax(self.data.shape[0])
-				self.dataRange.setEnd(self.dataRange.max())
-				self.dataRangeTextMax.setText('{}'.format(self.dataRange.max()))
+				self.m = 0
+				self.M = data.shape[0]-1
+				self.dataRange.setMin(self.m)
+				self.dataRange.setStart(self.m)
+				self.dataRangeTextMin.setText('{}'.format(self.m))
+				self.dataRange.setMax(self.M)
+				self.dataRange.setEnd(self.M)
+				self.dataRangeTextMax.setText('{}'.format(self.M))
 				self.dataRange.update()
 
+				self.data = data
 				self.img = self.mplWindow.ax.imshow(self.data.T, aspect='auto', cmap='gray')
+
 				self.mplWindow.fig.colorbar(self.img, cax=self.mplWindow.cax)
 				self.mplWindow.canvas.draw()
 
 
 		except OSError as e:
 			print('Failed to open file {} - {}'.format(file, e.args[0]))
+
+
+class TableModel(QtCore.QAbstractTableModel):
+	def __init__(self, data, parent=None):
+		super(TableModel, self).__init__()
+		self._data = data
+
+
+	def rowCount(self, parent=QtCore.QModelIndex()):
+		return self._data.shape[0]
+
+
+	def columnCount(self, parent=QtCore.QModelIndex()):
+		return self._data.shape[1]
+
+	def headerData(self, idx, orientation, role):
+		if role != QtCore.Qt.DisplayRole:
+			return QtCore.QVariant()
+
+		if orientation == QtCore.Qt.Horizontal:
+			return QtCore.QVariant(self._data.columns[idx])
+		else:
+			return QtCore.QVariant(self._data.index[idx])
+
+
+	def data(self, index, role=QtCore.Qt.DisplayRole):
+		if role == QtCore.Qt.DisplayRole:
+			i = index.row()
+			j = index.column()
+			return '{}'.format(self._data.iat[i, j])
+		else:
+			return QtCore.QVariant()
+
+
+	def flags(self, index):
+		return QtCore.Qt.ItemIsEnabled

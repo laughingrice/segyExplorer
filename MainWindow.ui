@@ -64,62 +64,43 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
-      <widget class="QWidget" name="fileHeaders">
+      <widget class="QWidget" name="fileHeaderTab">
        <attribute name="title">
         <string>File Headers</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QTreeWidget" name="headerTree">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
+         <widget class="QTableView" name="fileHeaderTable">
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
-          <column>
-           <property name="text">
-            <string notr="true">1</string>
-           </property>
-          </column>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="traceHeaders">
+      <widget class="QWidget" name="traceHeaderTab">
        <attribute name="title">
         <string>Trace Headers</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QTreeWidget" name="traceTree">
+         <widget class="QTableView" name="traceHeaderTable">
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
-          <attribute name="headerShowSortIndicator" stdset="0">
-           <bool>true</bool>
-          </attribute>
-          <column>
-           <property name="text">
-            <string notr="true">1</string>
-           </property>
-          </column>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="data">
+      <widget class="QWidget" name="dataTab">
        <attribute name="title">
         <string>Data</string>
        </attribute>
