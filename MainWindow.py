@@ -22,6 +22,11 @@ import numpy as np
 import pandas as pd
 import segyio
 
+try:
+	from hdf5storage import savemat
+except ModuleNotFoundError:
+	print('hdf5storage missing falling back to scipy.io and matlab file version 5')
+	from scipy.io import savemat
 
 class SegyMainWindow(QtWidgets.QMainWindow):
 	def __init__(self, ):
@@ -40,6 +45,13 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 
 		if fileName:
 			self.OpenSegy(fileName)
+
+
+	def onSave(self):
+		fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '', 'mat Files (*.mat)')
+
+		if fileName:
+			self.SaveMat(fileName)
 
 
 	def onColorRangeChange(self):
@@ -188,6 +200,10 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 				self.mplWindow.canvas.draw()
 		except Exception as e:
 			print('Failed to open file {} - {}'.format(file, e.args[0]))
+
+
+	def SaveMat(self, file: str):
+		savemat(file, {'data': self._data[self.m:self.M+1, :]}, truncate_invalid_matlab=True, truncate_existing=True)
 
 
 class PandasModel(QtCore.QAbstractTableModel):
