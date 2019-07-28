@@ -99,7 +99,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		self.mplWindow.ax.clear()
 		self.mplWindow.cax.clear()
 
-		self._img = self.mplWindow.ax.imshow(self._data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C, extent=[self.m, self.M, 0, self._data.shape[1]])
+		self._img = self.mplWindow.ax.imshow(self._data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C, extent=[self.m, self.M, self._data.shape[1], 0])
 		self.mplWindow.fig.colorbar(self._img, cax=self.mplWindow.cax)
 
 		self.mplWindow.canvas.draw()
