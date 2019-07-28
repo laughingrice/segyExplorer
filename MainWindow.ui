@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1176</width>
-    <height>894</height>
+    <width>1179</width>
+    <height>1006</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,7 +58,7 @@
        <attribute name="title">
         <string>Data</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,0">
         <item>
          <widget class="matplotlibFig" name="mplWindow" native="true">
           <property name="sizePolicy">
@@ -197,6 +197,73 @@
           </item>
          </layout>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>xLine</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QListView" name="ilineList">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>iLine</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QListView" name="xlineList">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="showDropIndicator" stdset="0">
+             <bool>true</bool>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>batch sz</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="batchSize"/>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -220,6 +287,24 @@
           </property>
           <property name="text">
            <string>Open</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="saveButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Save</string>
           </property>
          </widget>
         </item>
@@ -254,12 +339,36 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1176</width>
+     <width>1179</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuF_ile">
+    <property name="title">
+     <string>F&amp;ile</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+   </widget>
+   <addaction name="menuF_ile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen">
+   <property name="text">
+    <string>O&amp;pen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>S&amp;ave</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -281,8 +390,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1116</x>
-     <y>828</y>
+     <x>1165</x>
+     <y>971</y>
     </hint>
     <hint type="destinationlabel">
      <x>559</x>
@@ -313,8 +422,8 @@
    <slot>onColorRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>176</x>
-     <y>809</y>
+     <x>218</x>
+     <y>902</y>
     </hint>
     <hint type="destinationlabel">
      <x>977</x>
@@ -329,8 +438,8 @@
    <slot>onColorRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>262</x>
-     <y>809</y>
+     <x>296</x>
+     <y>902</y>
     </hint>
     <hint type="destinationlabel">
      <x>977</x>
@@ -345,8 +454,8 @@
    <slot>onColorRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>343</x>
-     <y>811</y>
+     <x>368</x>
+     <y>900</y>
     </hint>
     <hint type="destinationlabel">
      <x>977</x>
@@ -361,8 +470,8 @@
    <slot>onDataJumpLeft()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>912</x>
-     <y>808</y>
+     <x>940</x>
+     <y>903</y>
     </hint>
     <hint type="destinationlabel">
      <x>977</x>
@@ -377,8 +486,8 @@
    <slot>onDataJumpRight()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1006</x>
-     <y>808</y>
+     <x>1034</x>
+     <y>903</y>
     </hint>
     <hint type="destinationlabel">
      <x>977</x>
@@ -393,8 +502,8 @@
    <slot>onDataRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>809</x>
-     <y>818</y>
+     <x>846</x>
+     <y>902</y>
     </hint>
     <hint type="destinationlabel">
      <x>1064</x>
@@ -409,12 +518,44 @@
    <slot>onDataRangeChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>874</x>
-     <y>827</y>
+     <x>904</x>
+     <y>902</y>
     </hint>
     <hint type="destinationlabel">
      <x>1067</x>
      <y>710</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>502</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSave</sender>
+   <signal>triggered()</signal>
+   <receiver>segyExplorer</receiver>
+   <slot>onSave()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>502</y>
     </hint>
    </hints>
   </connection>
@@ -425,5 +566,6 @@
   <slot>onDataRangeChange()</slot>
   <slot>onDataJumpLeft()</slot>
   <slot>onDataJumpRight()</slot>
+  <slot>onSave()</slot>
  </slots>
 </ui>
