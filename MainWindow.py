@@ -30,6 +30,7 @@ except ModuleNotFoundError:
 
 class SegyMainWindow(QtWidgets.QMainWindow):
 	def __init__(self, ):
+	def __init__(self):
 		super().__init__()
 
 		ui_path = os.path.dirname(os.path.abspath(__file__))
