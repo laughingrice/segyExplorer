@@ -113,8 +113,8 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		if M == self.dataRangeMax.maximum():
 			return
 
-		step = (M - m + 1) * self.dataJumpStep.value()
-		M = min(M + step, self.dataRangeMax.maximum())
+		step = M - m + 1
+		M = min(M + step * self.dataJumpStep.value(), self.dataRangeMax.maximum())
 		m = M - step + 1
 
 		self.dataRangeMin.setValue(m)
@@ -130,7 +130,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 			return
 
 		step = M - m + 1
-		m = max(m - step, self.dataRangeMin.minimum())
+		m = max(m - step * self.dataJumpStep.value(), self.dataRangeMin.minimum())
 		M = m + step - 1
 
 		self.dataRangeMin.setValue(m)
