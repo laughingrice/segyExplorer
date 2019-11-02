@@ -106,12 +106,18 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
            </widget>
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="colorRangeMax">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="keyboardTracking">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
