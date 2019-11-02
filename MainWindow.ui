@@ -160,10 +160,18 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dataRangeMin"/>
+           <widget class="QSpinBox" name="dataRangeMin">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="dataRangeMax"/>
+           <widget class="QSpinBox" name="dataRangeMax">
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QToolButton" name="dataJumpLeft">
