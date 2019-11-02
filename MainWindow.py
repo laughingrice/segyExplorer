@@ -29,7 +29,6 @@ except ModuleNotFoundError:
 	from scipy.io import savemat
 
 class SegyMainWindow(QtWidgets.QMainWindow):
-	def __init__(self, ):
 	def __init__(self):
 		super().__init__()
 
@@ -39,6 +38,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 
 		self.img = None
 		self._data = None
+		self._processDataRange = True
 
 
 	def onOpen(self):
@@ -79,31 +79,40 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		self.mplWindow.canvas.draw()
 
 
+	def drawData(self):
+		self.mplWindow.ax.clear()
+		self.mplWindow.cax.clear()
+
+		m = self.dataRangeMin.value()
+		M = self.dataRangeMax.value()
+
+		self._img = self.mplWindow.ax.imshow(self._data[m:M+1, :].T,
+			extent=[m, M, self._data.shape[1], 0],
+			aspect='auto', cmap='gray', vmin=self.c, vmax=self.C)
+
+		self.mplWindow.fig.colorbar(self._img, cax=self.mplWindow.cax)
+
+		self.mplWindow.canvas.draw()
+
+
+	def updateDataRange(self, min, max):
+		self._processDataRange = False
+		self.dataRangeMin.setValue(min)
+		self._processDataRange = True
+		self.dataRangeMax.setValue(max)
+
+
 	def onDataRangeChange(self):
-		if self._data is None:
+		if self._data is None or not self._processDataRange:
 			return
 
 		m = self.dataRangeMin.value()
 		M = self.dataRangeMax.value()
 
-		if m == self.m and M == self.M:
-			return
+		if m >= M:
+			return # Do not draw, assuming user is still updating range
 
-		if m > M:
-			t = m
-			m = M
-			M = t
-
-		self.m = m
-		self.M = M
-
-		self.mplWindow.ax.clear()
-		self.mplWindow.cax.clear()
-
-		self._img = self.mplWindow.ax.imshow(self._data[self.m:self.M+1, :].T, aspect='auto', cmap='gray', vmin=self.c, vmax=self.C, extent=[self.m, self.M, self._data.shape[1], 0])
-		self.mplWindow.fig.colorbar(self._img, cax=self.mplWindow.cax)
-
-		self.mplWindow.canvas.draw()
+		self.drawData()
 
 
 	def onDataJumpRight(self):
@@ -117,10 +126,8 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		M = min(M + step * self.dataJumpStep.value(), self.dataRangeMax.maximum())
 		m = M - step + 1
 
-		self.dataRangeMin.setValue(m)
-		self.dataRangeMax.setValue(M)
+		self.updateDataRange(m, M)
 
-		self.onDataRangeChange()
 
 	def onDataJumpLeft(self):
 		m = self.dataRangeMin.value()
@@ -133,10 +140,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		m = max(m - step * self.dataJumpStep.value(), self.dataRangeMin.minimum())
 		M = m + step - 1
 
-		self.dataRangeMin.setValue(m)
-		self.dataRangeMax.setValue(M)
-
-		self.onDataRangeChange()
+		self.updateDataRange(m, M)
 
 
 	def OpenSegy(self, file: str):
@@ -180,31 +184,23 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 				self.colorRangeMin.setValue(self.c)
 				self.colorRangeMax.setValue(self.C)
 
-				self.m = 0
-				self.M = data.shape[0]-1
+				m = 0
+				M = data.shape[0]-1
 
 				self.dataRangeMin.setMinimum(0)
-				self.dataRangeMin.setMaximum(self.M)
-				self.dataRangeMin.setValue(self.m)
+				self.dataRangeMin.setMaximum(M)
 				self.dataRangeMax.setMinimum(0)
-				self.dataRangeMax.setMaximum(self.M)
-				self.dataRangeMax.setValue(self.M)
+				self.dataRangeMax.setMaximum(M)
 
 				self._data = data
 
-				self.mplWindow.ax.clear()
-				self.mplWindow.cax.clear()
-
-				self._img = self.mplWindow.ax.imshow(self._data.T, aspect='auto', cmap='gray')
-				self.mplWindow.fig.colorbar(self._img, cax=self.mplWindow.cax)
-
-				self.mplWindow.canvas.draw()
+				self.updateDataRange(m, M)
 		except Exception as e:
 			print('Failed to open file {} - {}'.format(file, e.args[0]))
 
 
 	def SaveMat(self, file: str):
-		savemat(file, {'data': self._data[self.m:self.M+1, :]}, truncate_invalid_matlab=True, truncate_existing=True)
+		savemat(file, {'data': self._data[m:M+1, :]}, truncate_invalid_matlab=True, truncate_existing=True)
 
 
 class PandasModel(QtCore.QAbstractTableModel):
