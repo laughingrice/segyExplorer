@@ -23,10 +23,11 @@ import pandas as pd
 import segyio
 
 try:
-	from hdf5storage import savemat
+	from hdf5storage import savemat, loadmat
 except ModuleNotFoundError:
 	print('hdf5storage missing falling back to scipy.io and matlab file version 5')
-	from scipy.io import savemat
+	from scipy.io import savemat, loadmat
+
 
 class SegyMainWindow(QtWidgets.QMainWindow):
 	def __init__(self):
@@ -45,14 +46,21 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*);;segy Files (*.segy)')
 
 		if fileName:
-			self.OpenSegy(fileName)
+			_, ext = os.path.splitext(fileName)
+
+			if ext == '.segy':
+				self.openSegy(fileName)
+			elif ext == '.mat':
+				self.openMat(fileName)
+			else:
+				ShowErrorDialog('Unknown extension for file: {}\n'.format(fileName))
 
 
 	def onSave(self):
 		fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '', 'mat Files (*.mat)')
 
 		if fileName:
-			self.SaveMat(fileName)
+			self.saveMat(fileName)
 
 
 	def onColorRangeChange(self):
@@ -143,7 +151,7 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 		self.updateDataRange(m, M)
 
 
-	def OpenSegy(self, file: str):
+	def openSegy(self, file: str):
 		try:
 			with segyio.open(file, strict=False) as s:
 				self._img = None
@@ -196,11 +204,103 @@ class SegyMainWindow(QtWidgets.QMainWindow):
 
 				self.updateDataRange(m, M)
 		except Exception as e:
-			print('Failed to open file {} - {}'.format(file, e.args[0]))
+			ShowErrorDialog('Failed to open SEGY file {} - {}'.format(file, e.args[0]))
 
 
-	def SaveMat(self, file: str):
-		savemat(file, {'data': self._data[m:M+1, :]}, truncate_invalid_matlab=True, truncate_existing=True)
+	def openMat(self, file: str):
+		try:
+			data = loadmat(file)
+
+			if len(data.keys()) == 1:
+				key = list(data.keys())[0]
+			else:
+				dialog = Dialog()
+				dialog.setModal(True)
+
+				selected = None
+				for k in data.keys():
+					item = QtWidgets.QListWidgetItem()
+					item.setText(k)
+					dialog.list.addItem(item)
+
+					if selected is None or k == 'data':
+						selected = item
+
+					dialog.list.addItem(item)
+
+				dialog.list.sortItems()
+				dialog.list.setAlternatingRowColors(True)
+				dialog.list.setCurrentItem(selected)
+
+				ret = dialog.exec_()
+
+				if not ret:
+					return
+
+				key = dialog.list.currentItem().text()
+
+			self._img = None
+			self._data = None
+
+
+			self.fileHeader = pd.DataFrame()
+			self.fileHeaderTable.setModel(PandasModel(self.fileHeader))
+
+
+			self.traceHeader = pd.DataFrame()
+			self.traceHeaderTable.setModel(PandasModel(self.traceHeader))
+
+			data = data[key]
+
+			self.c = np.min(data)
+			self.C = np.max(data)
+
+			self.colorRangeLinked.setChecked(True if self.c < 0 else False)
+			self.colorRangeMin.setEnabled(False if self.colorRangeLinked.isChecked() else True)
+
+			self.colorRangeMin.setMinimum(self.c)
+			self.colorRangeMin.setMaximum(0.5 * (self.c + self.C) if self.colorRangeLinked.isChecked() else self.C)
+			self.colorRangeMin.setSingleStep((self.C - self.c) / 40)
+			self.colorRangeMax.setMinimum(0.5 * (self.c + self.C) if self.colorRangeLinked.isChecked() else self.c)
+			self.colorRangeMax.setMaximum(self.C)
+			self.colorRangeMax.setSingleStep((self.C - self.c) / 40)
+
+			self.colorRangeMin.setValue(self.c)
+			self.colorRangeMax.setValue(self.C)
+
+			m = 0
+			M = data.shape[0]-1
+
+			self.dataRangeMin.setMinimum(0)
+			self.dataRangeMin.setMaximum(M)
+			self.dataRangeMax.setMinimum(0)
+			self.dataRangeMax.setMaximum(M)
+
+			self._data = data
+
+			self.updateDataRange(m, M)
+		except Exception as e:
+			ShowErrorDialog('Failed to open MAT file {} - {}'.format(file, e.args[0]))
+
+
+	def saveMat(self, file: str):
+		saveMat(file, {'data': self._data[m:M+1, :]}, truncate_invalid_matlab=True, truncate_existing=True)
+
+
+class Dialog(QtWidgets.QDialog):
+	def __init__(self):
+		super().__init__()
+		self.layout = QtWidgets.QHBoxLayout()
+		self.list = QtWidgets.QListWidget(self)
+		self.layout.addWidget(self.list)
+		self.btnBox = QtWidgets.QDialogButtonBox(
+			QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+			QtCore.Qt.Vertical,
+			self)
+		self.btnBox.accepted.connect(self.accept)
+		self.btnBox.rejected.connect(self.reject)
+		self.layout.addWidget(self.btnBox)
+		self.setLayout(self.layout)
 
 
 class PandasModel(QtCore.QAbstractTableModel):
@@ -254,3 +354,10 @@ class PandasModel(QtCore.QAbstractTableModel):
 			self.layoutChanged.emit()
 		except Exception as e:
 			print(e)
+
+
+def ShowErrorDialog(msg: str):
+	error_dialog = QtWidgets.QErrorMessage()
+	error_dialog.showMessage(msg)
+	error_dialog.setModal(True)
+	error_dialog.exec_()
